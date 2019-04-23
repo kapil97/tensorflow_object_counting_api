@@ -1,10 +1,6 @@
-#----------------------------------------------
-#--- Author         : Ahmet Ozlu
-#--- Mail           : ahmetozlu93@gmail.com
-#--- Date           : 27th January 2018
-#----------------------------------------------
-
 import tensorflow as tf
+from firebase import firebase
+import firebase_admin
 import csv
 import cv2
 import numpy as np
@@ -135,6 +131,7 @@ def cumulative_object_counting_x_axis(input_video, detection_graph, category_ind
 
 def cumulative_object_counting_y_axis(input_video, detection_graph, category_index, is_color_recognition_enabled, fps, width, height, roi, deviation):
         total_passed_vehicle = 0        
+        fir=firebase.FirebaseApplication('https://fyp-tm-666ad.firebaseio.com/',None)
 
         #initialize .csv
         with open('object_counting_report.csv', 'w') as f:
@@ -211,7 +208,8 @@ def cumulative_object_counting_y_axis(input_video, detection_graph, category_ind
                   cv2.line(input_frame, (0, roi), (width, roi), (0, 0, 0xFF), 5)
                 
                 total_passed_vehicle = total_passed_vehicle + counter
-
+                print(total_passed_vehicle)
+                fir.put('/Nerul',"Lane-2",total_passed_vehicle)
                 # insert information text to video frame
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 cv2.putText(
@@ -238,6 +236,7 @@ def cumulative_object_counting_y_axis(input_video, detection_graph, category_ind
 
                 output_movie.write(input_frame)
                 print ("writing frame")
+
                 #cv2.imshow('object counting',input_frame)
 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
